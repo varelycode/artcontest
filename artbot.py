@@ -31,12 +31,12 @@ async def check_msg(message):
     # else:
     #     print("No! given variable is not an instance of type string")
     if message.author == client.user:
-        return "Missing" and "missing2"
+        return "Missing", "missing2"
 
     if message.content.startswith('-ac h'):
         await message.channel.send('To use artcontest, message the artcontest bot and type the following commands:')
         result = 'To use artcontest, message the artcontest bot and type the following commands:'
-        return result and message.content
+        return result, message.content
     if message.content.startswith('-ac simg'):
         channel = message.channel
         await message.channel.send('Attach your image...')
@@ -59,7 +59,7 @@ async def check_msg(message):
                 print("no attachements sent pls attach somethin")
         msg = await client.wait_for('message', check=check_img)
         await channel.send('File Submitted: {.attachments[0].url}'.format(msg))
-        return msg and message.content
+        return msg, msg.attachments[0].url
     if message.content.startswith('-ac sdesc'):
         channel = message.channel
         await message.channel.send('Write your description in ONE message...')
@@ -68,30 +68,34 @@ async def check_msg(message):
                 return m.content and m.channel == channel
         msg = await client.wait_for('message', check=check_desc)
         await channel.send('Description Submitted: {.content}'.format(msg))
-        return msg and message.content
+        return msg, msg.content
     if message.content.startswith('-ac scredits'):
         channel = message.channel
         def check_creds(m):
             if m.content:
                 return m.content and channel == m.channel
         await message.channel.send('Add your credits in ONE message...')
-        msg = await client.wait_for('message', check=check_creds)
+        msg= await client.wait_for('message', check=check_creds)
         await channel.send('Credits Submitted: {.content}'.format(msg))
-        return msg and message.content
+        print(msg.content)
+        return msg, msg.content
 
 
 
 
 @client.event
 async def on_message(message):
-    try:
-        msginfo, content = await check_msg(message)
-        print('return value on_message')
-        print(msginfo)
-        print(content)
-    except Exception as e:
-        print(e)
 
+    msginfo, content = await check_msg(message)
+    print('return value on_message')
+
+    authorid = msginfo.author.id
+    name = msginfo.author.name
+
+    print(msginfo.author.id)
+    print(content)
+    print(authorid)
+    print(name)
 
     # data = {"discord_id": authorid, "name": name, "art_url": url, "creds": creds, "desc": desc}
     # db.child("users").push(data)
